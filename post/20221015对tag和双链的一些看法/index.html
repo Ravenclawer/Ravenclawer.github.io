@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="keywords" content="">
+<meta name="description" content="Zhenyu&#39;s blogs">
+<meta name="theme-color" content="">
+<title>20221015对tag和双链的一些看法 | Zhenyu&#39;s blogs</title>
+<link rel="shortcut icon" href="/favicon.ico?v=1665805503346">
+<link rel="stylesheet" href="/styles/main.css">
+<link rel="stylesheet" href="/media/css/pisces.css">
+
+<link rel="stylesheet" href="/media/fonts/font-awesome.css">
+<link
+  href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Rosario:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext"
+  rel="stylesheet" type="text/css">
+
+<link href="/media/hljs/styles/github.css"
+  rel="stylesheet">
+
+<script src="/media/hljs/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.0/velocity.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.0/velocity.ui.min.js"></script>
+
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+  <meta name="description" content="20221015对tag和双链的一些看法" />
+  <meta name="keywords" content="obsidian" />
+</head>
+
+<body>
+  <div class="head-top-line"></div>
+  <div class="header-box">
+    
+<div class="pisces">
+  <header class="header  ">
+    <div class="blog-header box-shadow-wrapper bg-color " id="header">
+      <div class="nav-toggle" id="nav_toggle">
+        <div class="toggle-box">
+          <div class="line line-top"></div>
+          <div class="line line-center"></div>
+          <div class="line line-bottom"></div>
+        </div>
+      </div>
+      <div class="site-meta">       
+        <div class="site-title">
+          
+            <a href="/" class="brand">
+              <span>Zhenyu&#39;s blogs</span>
+            </a>  
+          
+        </div>
+        
+      </div>
+      <nav class="site-nav" id="site_nav">
+        <ul id="nav_ul">
+          
+            
+            
+            <li class="nav-item ">
+              
+              
+                <a href="/" target="_self">
+                  <i class="fa fa-home"></i> 首页
+                </a>
+              
+            </li>
+          
+            
+            
+            <li class="nav-item ">
+              
+              
+                <a href="/archives/" target="_self">
+                  <i class="fa fa-archive"></i> 归档
+                </a>
+              
+            </li>
+          
+            
+            
+            <li class="nav-item ">
+              
+              
+                <a href="/tags/" target="_self">
+                  <i class="fa fa-tags"></i> 标签
+                </a>
+              
+            </li>
+          
+            
+            
+            <li class="nav-item ">
+              
+              
+                <a href="/post/about/" target="_self">
+                  <i class="fa fa-user"></i> 关于
+                </a>
+              
+            </li>
+          
+          
+        </ul>
+      </nav>
+    </div>
+  </header>
+</div>
+
+<script type="text/javascript"> 
+ 
+  let showNav = true;
+
+  let navToggle = document.querySelector('#nav_toggle'),
+  siteNav = document.querySelector('#site_nav');
+  
+  function navClick() {
+    let sideBar = document.querySelector('.sidebar');
+    let navUl = document.querySelector('#nav_ul');
+    navToggle.classList.toggle('nav-toggle-active');
+    siteNav.classList.toggle('nav-menu-active');
+    if (siteNav.classList.contains('nav-menu-active')) {
+      siteNav.style = "height: " + (navUl.children.length * 42) +"px !important";
+    } else {
+      siteNav.style = "";
+    }
+  }
+
+  navToggle.addEventListener('click',navClick);  
+</script>
+  </div>
+  <div class="main-continer">
+    
+    <div
+      class="section-layout pisces ">
+      <div class="section-layout-wrapper">
+        
+
+<div class="sidebar">
+  
+    <div class="sidebar-box box-shadow-wrapper bg-color right-motion" id="sidebar">
+      
+      <div class="sidebar-body pisces" id="sidebar_body">
+        
+      </div>
+    </div>
+  
+</div>
+<script>
+  const SIDEBAR_TITLE_ACTIVE = 'sidebar-title-active';
+  const SIDEBAR_BODY_ACTIVE = 'sidebar-body-active';
+  const SLIDE_UP_IN = 'slide-up-in';
+
+  let sidebar = document.querySelector('#sidebar'),
+  tocSideBar = document.querySelector('#tocSideBar'),
+  metaSideBar = document.querySelector('#metaSideBar'),
+  postToc = document.querySelector('#post_toc'),
+  postSiteMeta = document.querySelector('#post_side_meta'),
+  sidebarTitle = document.querySelector('.sidebar-title'),
+  sidebarBody = document.querySelector('#sidebar_body');
+
+  tocSideBar && tocSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  metaSideBar && metaSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  function toggleSidebar(e) {
+    let currentTitle = document.querySelector("."+SIDEBAR_TITLE_ACTIVE);
+    if (currentTitle == e.srcElement) {
+      return ;
+    }
+    let current, showElement, hideElement;
+    if (e.srcElement == metaSideBar) {
+      showElement = postSiteMeta;
+      hideElement = postToc;
+    } else if (e.srcElement == tocSideBar){
+      showElement = postToc;
+      hideElement = postSiteMeta;
+    }
+    currentTitle.classList.remove(SIDEBAR_TITLE_ACTIVE);
+    e.srcElement.classList.add(SIDEBAR_TITLE_ACTIVE);
+
+    window.Velocity(hideElement, 'stop');
+    window.Velocity(hideElement, 'transition.slideUpOut', {
+      display: 'none',
+      duration: 200,
+      complete: function () {
+        window.Velocity(showElement, 'transition.slideDownIn', {
+          duration: 200
+        });
+      }
+    })
+    hideElement.classList.remove(SIDEBAR_BODY_ACTIVE);
+    showElement.classList.add(SIDEBAR_BODY_ACTIVE);
+  }
+
+  postToc && postToc.addEventListener('transitionend', function() {
+    this.classList.remove(SLIDE_UP_IN);
+  });
+
+  if (sidebarBody) {
+    if (sidebarBody.classList.contains('pisces') || sidebarBody.classList.contains('gemini')) {
+      let hasFix = false;
+      let scrollEl = document.querySelector('.main-continer');
+      let limitTop = document.querySelector('#nav_ul').children.length * 42 + 162;
+      window.addEventListener('scroll', function(e) {
+        if (document.scrollingElement.scrollTop >= limitTop) {
+          if (!hasFix) {
+            sidebar.classList.add('sidebar-fixed');
+            hasFix = true;
+          }
+        } else {
+          if (hasFix) {
+            sidebar.classList.remove('sidebar-fixed');
+            hasFix = false;
+          }
+        }
+      });
+    }
+  }
+  
+</script>
+        <div class="section-box box-shadow-wrapper">
+          <div class="section bg-color post post-page">
+            <header class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="https://Ravenclawer.github.io/post/20221015对tag和双链的一些看法/">
+      20221015对tag和双链的一些看法
+    </a>
+  </h1>
+  <div class="post-meta">
+    
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span>发布于</span>
+      <span>2022-10-15</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
+    
+    <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show">分类于</span>
+      
+      
+      <a href="https://Ravenclawer.github.io/tag/BadJCVIz3/">
+        <span>obsidian</span>
+      </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
+    
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>4分钟</span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>948<span class="pc-show">字数</span></span>
+    </span>
+    
+  </div>
+</header>
+            <div class="post-body next-md-body" id="post_body">
+              <h1 id="对于tag和双链及提到当前标题的个人看法">对于tag和双链及提到当前标题的个人看法</h1>
+<p>Obsidian提供了多种分类和链接形式</p>
+<ul>
+<li>双链：可以看做一种强链接，在双链笔记的两端都能看到链接关系的存在。链接可以和多级标题、大纲配合，用做笔记的组织结构，也就是常说的MOC。（bottom-up）</li>
+<li>tag：可以看做弱化的双链，能将具有某个标签的笔记聚集在一起，在单一笔记中无法看出它与其他笔记的关系。但在obsidian的图谱中可以通过tag聚合所有与tag关联的笔记。（bottom-up）</li>
+<li>文件夹：单纯聚合信息和文件，无法体现笔记或文件之间的链接，但聚合在一起的文件和信息可能具有较高关联度，可以用在管理某个时间内特定项目的笔记。（top-down）</li>
+<li>提到当前标题：这个功能相当于给双链中任何笔记的标题加上了弱化版的双链，在指定笔记打开时才能看到链接到这个笔记的其他笔记，在图谱中不能显示，可以用于发现之前从未意识到的笔记链接关系。</li>
+</ul>
+<h1 id="基于以上看法对于以后笔记的启发">基于以上看法对于以后笔记的启发</h1>
+<ul>
+<li>对于Obsidian中记录笔记，尽量采用双链的形式，创建新笔记时，多考虑该笔记与现有笔记是否有链接，而不费力考虑其具体分类。</li>
+<li>对于tag的功能主要是用于聚合一些没有连接潜力的分类，或者说笔记自身的属性，如“科研”，&quot;生活&quot;，“网文”，“待阅读”之类的，tag力求简单，数量不能太多。用来快速找到具有相关属性或排除相关属性的笔记。</li>
+<li>对于多级标签，个人感觉不是组织文件的好方法，具体原因有二：1、用多级标签聚合的信息不在一处，没有办法像文件夹一样快速调用，2、用多级标签聚合的信息在图谱中显示不出笔记间的关联。况且，这种聚合可以用 20221015Obsidian 高级搜索功能(https://ravenclawer.github.io/post/20221015Obsidian高级搜索功能/)代替。</li>
+<li>标签的另一个用法是一元化笔记，也就是所谓的笔记记在一处，用tag给不同段落打上标签，这种方法在线性笔记时代可以帮助检索笔记。但在双链笔记中，这种方法既不能达到替代搜索功能的目的，又无法在图谱中体现笔记之间的链接关系，且obsidian没有像logseq一样的block，即使给段落打标签也只能定位到该笔记标题。当然多级标题也可以作为obsidian的一种属性的下拉选单来使用。</li>
+<li>对于文件夹，主要用来划分科研笔记、生活笔记以及各种项目笔记。</li>
+<li>对于提到当前标题：主要用该功能在时间维度上聚集笔记，创建了dailynote后，这一天新建的所有笔记中都要有日期信息，这样打开这一天的dailynote后就能在提到当前标题的一栏中看到这一天所建立的所有笔记。</li>
+<li>对于MOC的组织：之前决定是采用tag+text expend插件配合并在MOC中用tag树的形式来完成，但这样会有在MOC中完成了tag树后还需要组织双链笔记的问题，而双链的MOC自带部分tag功能，能聚合obsidian库中其他部分的相关内容，因此在可能有多级链接潜力的笔记中用wikilinks将其与其他笔记或MOC链接而达到分类的目的。</li>
+</ul>
+
+            </div>
+            <div class="post-footer">
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://Ravenclawer.github.io/post/20221015对tag和双链的一些看法/" title="20221015对tag和双链的一些看法">https://Ravenclawer.github.io/post/20221015对tag和双链的一些看法/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i> BY-NC-SA</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+  <div class="tags">
+    
+      <a href="https://Ravenclawer.github.io/tag/BadJCVIz3/"># obsidian</a>
+    
+  </div>
+  <div class="nav">
+    <div class="nav-prev">
+      
+        <i class="fa fa-chevron-left"></i>
+        <a class="nav-pc-next" title="20221015Obsidian高级搜索功能" href="https://Ravenclawer.github.io/post/20221015Obsidian高级搜索功能/">20221015Obsidian高级搜索功能</a class="nav-pc-next">
+        <a class="nav-mobile-prev" title="20221015Obsidian高级搜索功能" href="https://Ravenclawer.github.io/post/20221015Obsidian高级搜索功能/">上一篇</a>
+      
+    </div>
+    <div class="nav-next">
+      
+        <a class="nav-pc-next" title="Hello Gridea" href="https://Ravenclawer.github.io/post/hello-gridea/">Hello Gridea</a>
+        <a class="nav-mobile-next" title="Hello Gridea" href="https://Ravenclawer.github.io/post/hello-gridea/">下一篇</a>
+        <i class="fa fa-chevron-right"></i>
+      
+    </div>
+  </div>
+</div>
+            
+  
+    
+      <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '00b01f997cc472f7ac82',
+    clientSecret: 'e1012146c14e969a52c75b41eec846524b54da01',
+    repo: 'Ravenclawer.github.io',
+    owner: 'Ravenclawer',
+    admin: ['Ravenclawer'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+  gitalk.render('gitalk-container')
+</script>
+    
+    
+  
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-box">
+  <footer class="footer">
+    <div class="copyright">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | © 2019-2020 Theme By <a href="https://github.com/hsxyhao/gridea-theme-next" target="_blank">HsxyHao</a>
+    </div>
+    <div class="poweredby">
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。
+    </div>
+  </footer>
+  
+  
+  <div class="pisces back-to-top" id="back_to_top">
+    <i class="fa fa-arrow-up"></i>
+    
+    <span class="scrollpercent">
+      <span id="back_to_top_text">0</span>%
+    </span>
+    
+  </div>
+  
+    <div class="bg-img">
+      <img src="" />
+    </div>
+  
+  
+  
+    
+
+  
+</div>
+<script>
+
+  let sideBarOpen = 'sidebar-open';
+  let body = document.body;
+  let back2Top = document.querySelector('#back_to_top'),
+  back2TopText = document.querySelector('#back_to_top_text'),
+  drawerBox = document.querySelector('#drawer_box'),
+  rightSideBar = document.querySelector('.sidebar'),
+  viewport = document.querySelector('body');
+
+  function scrollAnimation(currentY, targetY) {
+   
+    let needScrollTop = targetY - currentY
+    let _currentY = currentY
+    setTimeout(() => {
+      const dist = Math.ceil(needScrollTop / 10)
+      _currentY += dist
+      window.scrollTo(_currentY, currentY)
+      if (needScrollTop > 10 || needScrollTop < -10) {
+        scrollAnimation(_currentY, targetY)
+      } else {
+        window.scrollTo(_currentY, targetY)
+      }
+    }, 1)
+  }
+
+  back2Top.addEventListener("click", function(e) {
+    scrollAnimation(document.scrollingElement.scrollTop, 0);
+    e.stopPropagation();
+    return false;
+  });
+  
+  window.addEventListener('scroll', function(e) {
+    let percent = document.scrollingElement.scrollTop / (document.scrollingElement.scrollHeight - document.scrollingElement.clientHeight) * 100;
+    if (percent > 1 && !back2Top.classList.contains('back-top-active')) {
+      back2Top.classList.add('back-top-active');
+    }
+    if (percent == 0) {
+      back2Top.classList.remove('back-top-active');
+    }
+    if (back2TopText) {
+      back2TopText.textContent = Math.floor(percent);
+    }
+  });
+
+  
+  let hasCacu = false;
+  window.onresize = function() {
+    if (window.width > 991) {
+      calcuHeight();
+    } else {
+      hasCacu = false;
+    }
+  }
+
+  function calcuHeight() {
+    // 动态调整站点概览高度
+    if (!hasCacu && back2Top.classList.contains('pisces') || back2Top.classList.contains('gemini')) {
+      let sideBar = document.querySelector('.sidebar');
+      let navUl = document.querySelector('#site_nav');
+      sideBar.style = 'margin-top:' + (navUl.offsetHeight + navUl.offsetTop + 15) + 'px;';
+      hasCacu = true;
+    }
+  }
+  calcuHeight();
+  
+  let open = false, MOTION_TIME = 300, RIGHT_MOVE_DIS = '320px';
+
+  if (drawerBox) {
+    let rightMotions = document.querySelectorAll('.right-motion');
+    let right = drawerBox.classList.contains('right');
+
+    let transitionDir = right ? "transition.slideRightIn" : "transition.slideLeftIn";
+
+    let openProp, closeProp;
+    if (right) {
+      openProp = {
+        paddingRight: RIGHT_MOVE_DIS 
+      };
+      closeProp = {
+        paddingRight: '0px'
+      };
+    } else {
+      openProp = {
+        paddingLeft: RIGHT_MOVE_DIS 
+      };
+      closeProp = {
+        paddingLeft: '0px'
+      };
+    }
+
+    drawerBox.onclick = function() {
+      open = !open;
+      window.Velocity(rightSideBar, 'stop');
+      window.Velocity(viewport, 'stop');
+      window.Velocity(rightMotions, 'stop');
+      if (open) {
+        window.Velocity(rightSideBar, {
+          width: RIGHT_MOVE_DIS
+        }, {
+          duration: MOTION_TIME,
+          begin: function() {
+            window.Velocity(rightMotions, transitionDir,{ });
+          }
+        })
+        window.Velocity(viewport, openProp,{
+          duration: MOTION_TIME
+        });
+      } else {
+        window.Velocity(rightSideBar, {
+          width: '0px'
+        }, {
+          duration: MOTION_TIME,
+          begin: function() {
+            window.Velocity(rightMotions, {
+              opacity: 0
+            });
+          }
+        })
+        window.Velocity(viewport, closeProp ,{
+          duration: MOTION_TIME
+        });
+      }
+      for (let i = 0; i < drawerBox.children.length; i++) {
+        drawerBox.children[i].classList.toggle('muse-line');
+      }
+      drawerBox.classList.toggle(sideBarOpen);
+    }
+  }
+
+  // 链接跳转
+  let newWindow = ''
+  if (newWindow === 'true') {
+    let links = document.querySelectorAll('.post-body a')
+    links.forEach(item => {
+      if (!item.classList.contains('btn')) {
+        item.setAttribute("target","_blank");
+      }
+    })
+  }
+  // 代码高亮
+  hljs.initHighlightingOnLoad();
+
+</script>
+    <div class="light-box" id="light_box"></div>
+<script>
+  let imgs = document.querySelectorAll('.post-body img');
+  let lightBox = document.querySelector('#light_box');
+  lightBox.addEventListener('mousedown', (e) => {
+    e.preventDefault()
+  })
+  lightBox.addEventListener('mousewheel', (e) => {
+    e.preventDefault()
+  })
+  let width = window.innerWidth * 0.8;
+  lightBox.onclick = () => {
+    let img = lightBox.querySelector('img');
+    lightBox.style = '';
+    img && img.remove();
+  }
+  imgs.forEach(item => {
+    item.onclick = function (e) {
+      let lightImg = document.createElement('img');
+      lightImg.src = this.src;
+      lightBox.style = `height: 100%; opacity: 1; background-color: rgba(0, 0, 0, 0.5);cursor: zoom-out;`;
+      lightImg.style = `width: ${width}px; border: 1px solid #fff; border-radius: 2px;`;
+      lightImg.onclick = function () {
+        lightBox.style = '';
+        this.remove();
+      }
+      lightBox.append(lightImg);
+    }
+  })
+</script>
+  </div>
+</body>
+<input hidden id="copy" />
+<script>
+  //拿来主义(真香)^_^，Clipboard 实现摘自掘金 https://juejin.im/post/5aefeb6e6fb9a07aa43c20af
+  window.Clipboard = (function (window, document, navigator) {
+    var textArea,
+      copy;
+
+    // 判断是不是ios端
+    function isOS() {
+      return navigator.userAgent.match(/ipad|iphone/i);
+    }
+    //创建文本元素
+    function createTextArea(text) {
+      textArea = document.createElement('textArea');
+      textArea.value = text;
+      textArea.style.width = 0;
+      textArea.style.height = 0;
+      textArea.clientHeight = 0;
+      textArea.clientWidth = 0;
+      document.body.appendChild(textArea);
+    }
+    //选择内容
+    function selectText() {
+      var range,
+        selection;
+
+      if (isOS()) {
+        range = document.createRange();
+        range.selectNodeContents(textArea);
+        selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        textArea.setSelectionRange(0, 999999);
+      } else {
+        textArea.select();
+      }
+    }
+
+    //复制到剪贴板
+    function copyToClipboard() {
+      try {
+        document.execCommand("Copy")
+      } catch (err) {
+        alert("复制错误！请手动复制！")
+      }
+      document.body.removeChild(textArea);
+    }
+
+    copy = function (text) {
+      createTextArea(text);
+      selectText();
+      copyToClipboard();
+    };
+
+    return {
+      copy: copy
+    };
+  })(window, document, navigator);
+
+  function copyCode(e) {
+    if (e.srcElement.tagName === 'SPAN' && e.srcElement.classList.contains('copy-code')) {
+      let code = e.currentTarget.querySelector('code');
+      var text = code.innerText;
+      if (e.srcElement.textContent === '复制成功') {
+        console.log('复制操作频率过高');
+        return;
+      }
+      e.srcElement.textContent = '复制成功';
+      (function (elem) {
+        setTimeout(() => {
+          if (elem.textContent === '复制成功') {
+            elem.textContent = '复制代码'
+          }
+        }, 1000);
+      })(e.srcElement)
+      Clipboard.copy(text);
+    }
+  }
+
+  let pres = document.querySelectorAll('pre');
+  pres.forEach(pre => {
+    let code = pre.querySelector('code');
+    let copyElem = document.createElement('span');
+    copyElem.classList.add('copy-code');
+    copyElem.textContent = '复制代码';
+    pre.appendChild(copyElem);
+    pre.onclick = copyCode
+  })
+</script>
+<script src="/media/js/motion.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
+<script>
+  var scroll = new SmoothScroll('a[href*="#"]', {
+    speed: 500
+  });
+</script>
+
+<!-- <div class="search-mask" id="search_mask">
+  <div class="search-box">
+    <div class="search-title">
+      <i class="fa fa-search"></i>
+      <div class="input-box">
+        <input type="text" placeholder="搜索">
+      </div>
+      <i class="fa fa-times-circle"></i>
+    </div>
+    <div class="result">
+      
+      <div class="item">
+        <a class="result-title" href="https://Ravenclawer.github.io/post/20221015Obsidian高级搜索功能/"" data-c="
+          &lt;p&gt;搜索是一个十分强大的特性，但同时它也可以使你无比的困惑。在大多数情况下，你只需要简单地输入你想要搜索的东西，它都能够工作。但除此之外，搜索功能还有许多能够帮助你更快更准确搜索的能力。&lt;/p&gt;
+&lt;h3 id=&#34;高级搜索&#34;&gt;高级搜索&lt;/h3&gt;
+&lt;p&gt;在你输入搜索关键字时，点击&amp;quot;说明搜索含义&amp;quot;将能够显示搜索的范围，这将会在你搜索的关键字排错中帮上大忙。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果字符串中包含空格，则默认被当作多个关键字进行搜索。例如，&lt;code&gt;foo bar&lt;/code&gt; 的搜索范围将等同于&lt;code&gt;foo&lt;/code&gt;的范围加上&lt;code&gt;bar&lt;/code&gt;的范围。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&amp;quot;引用 字符串&amp;quot;&lt;/code&gt;可以用来解决关键字中包含空格的情况。易得，加上了双引号之后的 &lt;code&gt;&amp;quot;foo bar&amp;quot;&lt;/code&gt; 将精确搜索到同时包含这两个词的内容。如果你要搜索一串包含双引号的字符，使用&lt;code&gt;\&amp;quot;&lt;/code&gt;来防止错误识别，同理对于反斜杆可以使用&lt;code&gt;\\&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;搜索中也可以使用布尔运算。使用&lt;code&gt;OR&lt;/code&gt;来匹配几者中的一个，使用&lt;code&gt;-&lt;/code&gt;来取反。空格字符将被用于代表布尔运算的&amp;quot;与&amp;quot;。
+&lt;ul&gt;
+&lt;li&gt;举个例子：&lt;code&gt;foo OR bar&lt;/code&gt;将会被识别为或运算，笔记中可以仅包含其中之一。&lt;code&gt;foo -bar&lt;/code&gt;将会搜索所有只带&lt;code&gt;foo&lt;/code&gt;但不带&lt;code&gt;bar&lt;/code&gt;的笔记。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;可以使用括号来将布尔运算分组。举个例子，&lt;code&gt;(a OR b) (c OR d)&lt;/code&gt;。这在非常复杂的运算中可以防止出现意料之外的情况。&lt;/li&gt;
+&lt;li&gt;搜索同样支持正则表达式（regex）。使用斜杠来将正则表达式圈住，如 &lt;code&gt;/[a-z]{3}/&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;我们同样也提供了一些特殊的操作。其中的一些还可以进行嵌套，比如说&lt;code&gt;file:(&amp;quot;to be&amp;quot; OR -&amp;quot;2B&amp;quot;)&lt;/code&gt;。
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;file:&lt;/code&gt; 将会只匹配文件名中包含对应字符的文件。比如：&lt;code&gt;file:&amp;quot;.jpg&amp;quot;&lt;/code&gt;。如果你使用Zettelkasten-style UIDs，这将可以很好地帮助你找到某一段时间的笔记，比如&lt;code&gt;file:&amp;quot;202007&amp;quot;&lt;/code&gt;来定位到2020年七月创建的笔记。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;path:&lt;/code&gt;将会只匹配包含对应绝对路径的文件。举个例子：&lt;code&gt;file:&amp;quot;Daily Notes/2020-07&amp;quot;&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;match-case:&lt;/code&gt; 和 &lt;code&gt;ignore-case:&lt;/code&gt;将会强制接下来的字符是否大小写匹配。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;搜索设置&#34;&gt;搜索设置&lt;/h3&gt;
+&lt;p&gt;搜索功能附带了几个可供选择的功能：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;折叠搜索结果&lt;/code&gt; 将会只显示匹配到的文件名称以及对应内容的行数。可以通过点击文件名旁边的箭头来展开对应的项。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;区分大小写&lt;/code&gt; 可以将搜索更改为大小写敏感模式，其会被&lt;code&gt;match-case:&lt;/code&gt; 和 &lt;code&gt;ignore-case:&lt;/code&gt;覆盖。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;说明搜索含义&lt;/code&gt;将会显示该字符串的搜索范围。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;对图谱高级搜索设置实例&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;- path:dailynotes - path:200OKR - path:Obsidian插件测试 - path:ZoteroPortable - path:Templaters
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;{20221015Obsidian高级搜索功能}&amp;lt; https://ravenclawer.github.io/post/20221015Obsidian高级搜索功能/&amp;gt;&lt;/p&gt;
+">20221015Obsidian高级搜索功能</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" href="https://Ravenclawer.github.io/post/20221015对tag和双链的一些看法/"" data-c="
+          &lt;h1 id=&#34;对于tag和双链及提到当前标题的个人看法&#34;&gt;对于tag和双链及提到当前标题的个人看法&lt;/h1&gt;
+&lt;p&gt;Obsidian提供了多种分类和链接形式&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;双链：可以看做一种强链接，在双链笔记的两端都能看到链接关系的存在。链接可以和多级标题、大纲配合，用做笔记的组织结构，也就是常说的MOC。（bottom-up）&lt;/li&gt;
+&lt;li&gt;tag：可以看做弱化的双链，能将具有某个标签的笔记聚集在一起，在单一笔记中无法看出它与其他笔记的关系。但在obsidian的图谱中可以通过tag聚合所有与tag关联的笔记。（bottom-up）&lt;/li&gt;
+&lt;li&gt;文件夹：单纯聚合信息和文件，无法体现笔记或文件之间的链接，但聚合在一起的文件和信息可能具有较高关联度，可以用在管理某个时间内特定项目的笔记。（top-down）&lt;/li&gt;
+&lt;li&gt;提到当前标题：这个功能相当于给双链中任何笔记的标题加上了弱化版的双链，在指定笔记打开时才能看到链接到这个笔记的其他笔记，在图谱中不能显示，可以用于发现之前从未意识到的笔记链接关系。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;基于以上看法对于以后笔记的启发&#34;&gt;基于以上看法对于以后笔记的启发&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;对于Obsidian中记录笔记，尽量采用双链的形式，创建新笔记时，多考虑该笔记与现有笔记是否有链接，而不费力考虑其具体分类。&lt;/li&gt;
+&lt;li&gt;对于tag的功能主要是用于聚合一些没有连接潜力的分类，或者说笔记自身的属性，如“科研”，&amp;quot;生活&amp;quot;，“网文”，“待阅读”之类的，tag力求简单，数量不能太多。用来快速找到具有相关属性或排除相关属性的笔记。&lt;/li&gt;
+&lt;li&gt;对于多级标签，个人感觉不是组织文件的好方法，具体原因有二：1、用多级标签聚合的信息不在一处，没有办法像文件夹一样快速调用，2、用多级标签聚合的信息在图谱中显示不出笔记间的关联。况且，这种聚合可以用 20221015Obsidian 高级搜索功能(https://ravenclawer.github.io/post/20221015Obsidian高级搜索功能/)代替。&lt;/li&gt;
+&lt;li&gt;标签的另一个用法是一元化笔记，也就是所谓的笔记记在一处，用tag给不同段落打上标签，这种方法在线性笔记时代可以帮助检索笔记。但在双链笔记中，这种方法既不能达到替代搜索功能的目的，又无法在图谱中体现笔记之间的链接关系，且obsidian没有像logseq一样的block，即使给段落打标签也只能定位到该笔记标题。当然多级标题也可以作为obsidian的一种属性的下拉选单来使用。&lt;/li&gt;
+&lt;li&gt;对于文件夹，主要用来划分科研笔记、生活笔记以及各种项目笔记。&lt;/li&gt;
+&lt;li&gt;对于提到当前标题：主要用该功能在时间维度上聚集笔记，创建了dailynote后，这一天新建的所有笔记中都要有日期信息，这样打开这一天的dailynote后就能在提到当前标题的一栏中看到这一天所建立的所有笔记。&lt;/li&gt;
+&lt;li&gt;对于MOC的组织：之前决定是采用tag+text expend插件配合并在MOC中用tag树的形式来完成，但这样会有在MOC中完成了tag树后还需要组织双链笔记的问题，而双链的MOC自带部分tag功能，能聚合obsidian库中其他部分的相关内容，因此在可能有多级链接潜力的笔记中用wikilinks将其与其他笔记或MOC链接而达到分类的目的。&lt;/li&gt;
+&lt;/ul&gt;
+">20221015对tag和双链的一些看法</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" href="https://Ravenclawer.github.io/post/about/"" data-c="
+          &lt;blockquote&gt;
+&lt;p&gt;Valar Morghulis，很高兴遇见你！🤝&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;关于本站&#34;&gt;🏠 关于本站&lt;/h2&gt;
+&lt;p&gt;本站主要用于完善个人学习工作流的最后一环——输出&lt;br&gt;
+之所以选择个人博客的形式的原因在于，目前很多博客平台对文章有审查，或者利用用户知识牟利但不反馈用户的现象，因此使用自有博客进行知识输出分享。&lt;/p&gt;
+&lt;h2 id=&#34;博主是谁&#34;&gt;👨‍💻 博主是谁&lt;/h2&gt;
+&lt;p&gt;在读博士一枚，研究领域涉及微生物学、系统生物学、动物科学。&lt;/p&gt;
+&lt;h2 id=&#34;兴趣爱好&#34;&gt;⛹ 兴趣爱好&lt;/h2&gt;
+&lt;p&gt;陶笛、卡林巴、贝斯、游泳&lt;/p&gt;
+&lt;h2 id=&#34;联系我呀&#34;&gt;📬 联系我呀&lt;/h2&gt;
+&lt;p&gt;对于我的博文有任何建议和意见，可以在评论区反馈，也可以通过邮箱834330532@qq.com和我联系。&lt;/p&gt;
+">关于</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" href="https://Ravenclawer.github.io/post/hello-gridea/"" data-c="
+          &lt;p&gt;👏  欢迎使用 &lt;strong&gt;Gridea&lt;/strong&gt; ！&lt;br&gt;
+✍️  &lt;strong&gt;Gridea&lt;/strong&gt; 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/getgridea/gridea&#34;&gt;Github&lt;/a&gt;&lt;br&gt;
+&lt;a href=&#34;https://gridea.dev/&#34;&gt;Gridea 主页&lt;/a&gt;&lt;br&gt;
+&lt;a href=&#34;https://fehey.com/&#34;&gt;示例网站&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;特性&#34;&gt;特性👇&lt;/h2&gt;
+&lt;p&gt;📝  你可以使用最酷的 &lt;strong&gt;Markdown&lt;/strong&gt; 语法，进行快速创作&lt;/p&gt;
+&lt;p&gt;🌉  你可以给文章配上精美的封面图和在文章任意位置插入图片&lt;/p&gt;
+&lt;p&gt;🏷️  你可以对文章进行标签分组&lt;/p&gt;
+&lt;p&gt;📋  你可以自定义菜单，甚至可以创建外部链接菜单&lt;/p&gt;
+&lt;p&gt;💻  你可以在 &lt;strong&gt;Windows&lt;/strong&gt;，&lt;strong&gt;MacOS&lt;/strong&gt; 或 &lt;strong&gt;Linux&lt;/strong&gt; 设备上使用此客户端&lt;/p&gt;
+&lt;p&gt;🌎  你可以使用 &lt;strong&gt;𝖦𝗂𝗍𝗁𝗎𝖻 𝖯𝖺𝗀𝖾𝗌&lt;/strong&gt; 或 &lt;strong&gt;Coding Pages&lt;/strong&gt; 向世界展示，未来将支持更多平台&lt;/p&gt;
+&lt;p&gt;💬  你可以进行简单的配置，接入 &lt;a href=&#34;https://github.com/gitalk/gitalk&#34;&gt;Gitalk&lt;/a&gt; 或 &lt;a href=&#34;https://github.com/SukkaW/DisqusJS&#34;&gt;DisqusJS&lt;/a&gt; 评论系统&lt;/p&gt;
+&lt;p&gt;🇬🇧  你可以使用&lt;strong&gt;中文简体&lt;/strong&gt;或&lt;strong&gt;英语&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;🌁  你可以任意使用应用内默认主题或任意第三方主题，强大的主题自定义能力&lt;/p&gt;
+&lt;p&gt;🖥  你可以自定义源文件夹，利用 OneDrive、百度网盘、iCloud、Dropbox 等进行多设备同步&lt;/p&gt;
+&lt;p&gt;🌱 当然 &lt;strong&gt;Gridea&lt;/strong&gt; 还很年轻，有很多不足，但请相信，它会不停向前 🏃&lt;/p&gt;
+&lt;p&gt;未来，它一定会成为你离不开的伙伴&lt;/p&gt;
+&lt;p&gt;尽情发挥你的才华吧！&lt;/p&gt;
+&lt;p&gt;😘 Enjoy~&lt;/p&gt;
+">Hello Gridea</a>
+      </div>
+      
+    </div>
+  </div>
+</div>
+<script>
+  // var escape = "[{&#34;content&#34;:&#34;&lt;p&gt;搜索是一个十分强大的特性，但同时它也可以使你无比的困惑。在大多数情况下，你只需要简单地输入你想要搜索的东西，它都能够工作。但除此之外，搜索功能还有许多能够帮助你更快更准确搜索的能力。&lt;/p&gt;\n&lt;h3 id=\&#34;高级搜索\&#34;&gt;高级搜索&lt;/h3&gt;\n&lt;p&gt;在你输入搜索关键字时，点击&amp;quot;说明搜索含义&amp;quot;将能够显示搜索的范围，这将会在你搜索的关键字排错中帮上大忙。&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;如果字符串中包含空格，则默认被当作多个关键字进行搜索。例如，&lt;code&gt;foo bar&lt;/code&gt; 的搜索范围将等同于&lt;code&gt;foo&lt;/code&gt;的范围加上&lt;code&gt;bar&lt;/code&gt;的范围。&lt;/li&gt;\n&lt;li&gt;&lt;code&gt;&amp;quot;引用 字符串&amp;quot;&lt;/code&gt;可以用来解决关键字中包含空格的情况。易得，加上了双引号之后的 &lt;code&gt;&amp;quot;foo bar&amp;quot;&lt;/code&gt; 将精确搜索到同时包含这两个词的内容。如果你要搜索一串包含双引号的字符，使用&lt;code&gt;\\&amp;quot;&lt;/code&gt;来防止错误识别，同理对于反斜杆可以使用&lt;code&gt;\\\\&lt;/code&gt;。&lt;/li&gt;\n&lt;li&gt;搜索中也可以使用布尔运算。使用&lt;code&gt;OR&lt;/code&gt;来匹配几者中的一个，使用&lt;code&gt;-&lt;/code&gt;来取反。空格字符将被用于代表布尔运算的&amp;quot;与&amp;quot;。\n&lt;ul&gt;\n&lt;li&gt;举个例子：&lt;code&gt;foo OR bar&lt;/code&gt;将会被识别为或运算，笔记中可以仅包含其中之一。&lt;code&gt;foo -bar&lt;/code&gt;将会搜索所有只带&lt;code&gt;foo&lt;/code&gt;但不带&lt;code&gt;bar&lt;/code&gt;的笔记。&lt;/li&gt;\n&lt;/ul&gt;\n&lt;/li&gt;\n&lt;li&gt;可以使用括号来将布尔运算分组。举个例子，&lt;code&gt;(a OR b) (c OR d)&lt;/code&gt;。这在非常复杂的运算中可以防止出现意料之外的情况。&lt;/li&gt;\n&lt;li&gt;搜索同样支持正则表达式（regex）。使用斜杠来将正则表达式圈住，如 &lt;code&gt;/[a-z]{3}/&lt;/code&gt;。&lt;/li&gt;\n&lt;li&gt;我们同样也提供了一些特殊的操作。其中的一些还可以进行嵌套，比如说&lt;code&gt;file:(&amp;quot;to be&amp;quot; OR -&amp;quot;2B&amp;quot;)&lt;/code&gt;。\n&lt;ul&gt;\n&lt;li&gt;&lt;code&gt;file:&lt;/code&gt; 将会只匹配文件名中包含对应字符的文件。比如：&lt;code&gt;file:&amp;quot;.jpg&amp;quot;&lt;/code&gt;。如果你使用Zettelkasten-style UIDs，这将可以很好地帮助你找到某一段时间的笔记，比如&lt;code&gt;file:&amp;quot;202007&amp;quot;&lt;/code&gt;来定位到2020年七月创建的笔记。&lt;/li&gt;\n&lt;li&gt;&lt;code&gt;path:&lt;/code&gt;将会只匹配包含对应绝对路径的文件。举个例子：&lt;code&gt;file:&amp;quot;Daily Notes/2020-07&amp;quot;&lt;/code&gt;。&lt;/li&gt;\n&lt;li&gt;&lt;code&gt;match-case:&lt;/code&gt; 和 &lt;code&gt;ignore-case:&lt;/code&gt;将会强制接下来的字符是否大小写匹配。&lt;/li&gt;\n&lt;/ul&gt;\n&lt;/li&gt;\n&lt;/ul&gt;\n&lt;h3 id=\&#34;搜索设置\&#34;&gt;搜索设置&lt;/h3&gt;\n&lt;p&gt;搜索功能附带了几个可供选择的功能：&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;&lt;code&gt;折叠搜索结果&lt;/code&gt; 将会只显示匹配到的文件名称以及对应内容的行数。可以通过点击文件名旁边的箭头来展开对应的项。&lt;/li&gt;\n&lt;li&gt;&lt;code&gt;区分大小写&lt;/code&gt; 可以将搜索更改为大小写敏感模式，其会被&lt;code&gt;match-case:&lt;/code&gt; 和 &lt;code&gt;ignore-case:&lt;/code&gt;覆盖。&lt;/li&gt;\n&lt;li&gt;&lt;code&gt;说明搜索含义&lt;/code&gt;将会显示该字符串的搜索范围。&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;对图谱高级搜索设置实例&lt;/p&gt;\n&lt;pre&gt;&lt;code&gt;- path:dailynotes - path:200OKR - path:Obsidian插件测试 - path:ZoteroPortable - path:Templaters\n&lt;/code&gt;&lt;/pre&gt;\n&lt;p&gt;{20221015Obsidian高级搜索功能}&amp;lt; https://ravenclawer.github.io/post/20221015Obsidian高级搜索功能/&amp;gt;&lt;/p&gt;\n&#34;,&#34;fileName&#34;:&#34;20221015Obsidian高级搜索功能&#34;,&#34;abstract&#34;:&#34;&#34;,&#34;title&#34;:&#34;20221015Obsidian高级搜索功能&#34;,&#34;tags&#34;:[{&#34;name&#34;:&#34;obsidian&#34;,&#34;slug&#34;:&#34;BadJCVIz3&#34;,&#34;used&#34;:true,&#34;link&#34;:&#34;https://Ravenclawer.github.io/tag/BadJCVIz3/&#34;}],&#34;date&#34;:&#34;2022-10-15 00:00:00&#34;,&#34;dateFormat&#34;:&#34;2022-10-15&#34;,&#34;feature&#34;:&#34;&#34;,&#34;link&#34;:&#34;https://Ravenclawer.github.io/post/20221015Obsidian高级搜索功能/&#34;,&#34;hideInList&#34;:false,&#34;isTop&#34;:false,&#34;stats&#34;:{&#34;text&#34;:&#34;3 min read&#34;,&#34;time&#34;:168000,&#34;words&#34;:768,&#34;minutes&#34;:3},&#34;description&#34;:&#34;搜索是一个十分强大的特性，但同时它也可以使你无比的困惑。在大多数情况下，你只需要简单地输入你想要搜索的东西，它都能够工作。但除此之外，搜索功能还有许多能够帮助你更快更准确搜索的能力。\n高级搜索\n在你输入搜索关键字时，点击&amp;quot;说明搜索...&#34;,&#34;toc&#34;:&#34;&lt;ul class=\&#34;markdownIt-TOC\&#34;&gt;\n&lt;li&gt;\n&lt;ul&gt;\n&lt;li&gt;\n&lt;ul&gt;\n&lt;li&gt;&lt;a href=\&#34;#%E9%AB%98%E7%BA%A7%E6%90%9C%E7%B4%A2\&#34;&gt;高级搜索&lt;/a&gt;&lt;/li&gt;\n&lt;li&gt;&lt;a href=\&#34;#%E6%90%9C%E7%B4%A2%E8%AE%BE%E7%BD%AE\&#34;&gt;搜索设置&lt;/a&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;/li&gt;\n&lt;/ul&gt;\n&lt;/li&gt;\n&lt;/ul&gt;\n&#34;},{&#34;content&#34;:&#34;&lt;h1 id=\&#34;对于tag和双链及提到当前标题的个人看法\&#34;&gt;对于tag和双链及提到当前标题的个人看法&lt;/h1&gt;\n&lt;p&gt;Obsidian提供了多种分类和链接形式&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;双链：可以看做一种强链接，在双链笔记的两端都能看到链接关系的存在。链接可以和多级标题、大纲配合，用做笔记的组织结构，也就是常说的MOC。（bottom-up）&lt;/li&gt;\n&lt;li&gt;tag：可以看做弱化的双链，能将具有某个标签的笔记聚集在一起，在单一笔记中无法看出它与其他笔记的关系。但在obsidian的图谱中可以通过tag聚合所有与tag关联的笔记。（bottom-up）&lt;/li&gt;\n&lt;li&gt;文件夹：单纯聚合信息和文件，无法体现笔记或文件之间的链接，但聚合在一起的文件和信息可能具有较高关联度，可以用在管理某个时间内特定项目的笔记。（top-down）&lt;/li&gt;\n&lt;li&gt;提到当前标题：这个功能相当于给双链中任何笔记的标题加上了弱化版的双链，在指定笔记打开时才能看到链接到这个笔记的其他笔记，在图谱中不能显示，可以用于发现之前从未意识到的笔记链接关系。&lt;/li&gt;\n&lt;/ul&gt;\n&lt;h1 id=\&#34;基于以上看法对于以后笔记的启发\&#34;&gt;基于以上看法对于以后笔记的启发&lt;/h1&gt;\n&lt;ul&gt;\n&lt;li&gt;对于Obsidian中记录笔记，尽量采用双链的形式，创建新笔记时，多考虑该笔记与现有笔记是否有链接，而不费力考虑其具体分类。&lt;/li&gt;\n&lt;li&gt;对于tag的功能主要是用于聚合一些没有连接潜力的分类，或者说笔记自身的属性，如“科研”，&amp;quot;生活&amp;quot;，“网文”，“待阅读”之类的，tag力求简单，数量不能太多。用来快速找到具有相关属性或排除相关属性的笔记。&lt;/li&gt;\n&lt;li&gt;对于多级标签，个人感觉不是组织文件的好方法，具体原因有二：1、用多级标签聚合的信息不在一处，没有办法像文件夹一样快速调用，2、用多级标签聚合的信息在图谱中显示不出笔记间的关联。况且，这种聚合可以用 20221015Obsidian 高级搜索功能(https://ravenclawer.github.io/post/20221015Obsidian高级搜索功能/)代替。&lt;/li&gt;\n&lt;li&gt;标签的另一个用法是一元化笔记，也就是所谓的笔记记在一处，用tag给不同段落打上标签，这种方法在线性笔记时代可以帮助检索笔记。但在双链笔记中，这种方法既不能达到替代搜索功能的目的，又无法在图谱中体现笔记之间的链接关系，且obsidian没有像logseq一样的block，即使给段落打标签也只能定位到该笔记标题。当然多级标题也可以作为obsidian的一种属性的下拉选单来使用。&lt;/li&gt;\n&lt;li&gt;对于文件夹，主要用来划分科研笔记、生活笔记以及各种项目笔记。&lt;/li&gt;\n&lt;li&gt;对于提到当前标题：主要用该功能在时间维度上聚集笔记，创建了dailynote后，这一天新建的所有笔记中都要有日期信息，这样打开这一天的dailynote后就能在提到当前标题的一栏中看到这一天所建立的所有笔记。&lt;/li&gt;\n&lt;li&gt;对于MOC的组织：之前决定是采用tag+text expend插件配合并在MOC中用tag树的形式来完成，但这样会有在MOC中完成了tag树后还需要组织双链笔记的问题，而双链的MOC自带部分tag功能，能聚合obsidian库中其他部分的相关内容，因此在可能有多级链接潜力的笔记中用wikilinks将其与其他笔记或MOC链接而达到分类的目的。&lt;/li&gt;\n&lt;/ul&gt;\n&#34;,&#34;fileName&#34;:&#34;20221015对tag和双链的一些看法&#34;,&#34;abstract&#34;:&#34;&#34;,&#34;title&#34;:&#34;20221015对tag和双链的一些看法&#34;,&#34;tags&#34;:[{&#34;name&#34;:&#34;obsidian&#34;,&#34;slug&#34;:&#34;BadJCVIz3&#34;,&#34;used&#34;:true,&#34;link&#34;:&#34;https://Ravenclawer.github.io/tag/BadJCVIz3/&#34;}],&#34;date&#34;:&#34;2022-10-15 00:00:00&#34;,&#34;dateFormat&#34;:&#34;2022-10-15&#34;,&#34;feature&#34;:&#34;&#34;,&#34;link&#34;:&#34;https://Ravenclawer.github.io/post/20221015对tag和双链的一些看法/&#34;,&#34;hideInList&#34;:false,&#34;isTop&#34;:false,&#34;stats&#34;:{&#34;text&#34;:&#34;4 min read&#34;,&#34;time&#34;:196000,&#34;words&#34;:948,&#34;minutes&#34;:4},&#34;description&#34;:&#34;对于tag和双链及提到当前标题的个人看法\nObsidian提供了多种分类和链接形式\n\n双链：可以看做一种强链接，在双链笔记的两端都能看到链接关系的存在。链接可以和多级标题、大纲配合，用做笔记的组织结构，也就是常说的MOC。（bottom-u...&#34;,&#34;toc&#34;:&#34;&lt;ul class=\&#34;markdownIt-TOC\&#34;&gt;\n&lt;li&gt;&lt;a href=\&#34;#%E5%AF%B9%E4%BA%8Etag%E5%92%8C%E5%8F%8C%E9%93%BE%E5%8F%8A%E6%8F%90%E5%88%B0%E5%BD%93%E5%89%8D%E6%A0%87%E9%A2%98%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%9C%8B%E6%B3%95\&#34;&gt;对于tag和双链及提到当前标题的个人看法&lt;/a&gt;&lt;/li&gt;\n&lt;li&gt;&lt;a href=\&#34;#%E5%9F%BA%E4%BA%8E%E4%BB%A5%E4%B8%8A%E7%9C%8B%E6%B3%95%E5%AF%B9%E4%BA%8E%E4%BB%A5%E5%90%8E%E7%AC%94%E8%AE%B0%E7%9A%84%E5%90%AF%E5%8F%91\&#34;&gt;基于以上看法对于以后笔记的启发&lt;/a&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&#34;},{&#34;content&#34;:&#34;&lt;blockquote&gt;\n&lt;p&gt;Valar Morghulis，很高兴遇见你！🤝&lt;/p&gt;\n&lt;/blockquote&gt;\n&lt;h2 id=\&#34;关于本站\&#34;&gt;🏠 关于本站&lt;/h2&gt;\n&lt;p&gt;本站主要用于完善个人学习工作流的最后一环——输出&lt;br&gt;\n之所以选择个人博客的形式的原因在于，目前很多博客平台对文章有审查，或者利用用户知识牟利但不反馈用户的现象，因此使用自有博客进行知识输出分享。&lt;/p&gt;\n&lt;h2 id=\&#34;博主是谁\&#34;&gt;👨‍💻 博主是谁&lt;/h2&gt;\n&lt;p&gt;在读博士一枚，研究领域涉及微生物学、系统生物学、动物科学。&lt;/p&gt;\n&lt;h2 id=\&#34;兴趣爱好\&#34;&gt;⛹ 兴趣爱好&lt;/h2&gt;\n&lt;p&gt;陶笛、卡林巴、贝斯、游泳&lt;/p&gt;\n&lt;h2 id=\&#34;联系我呀\&#34;&gt;📬 联系我呀&lt;/h2&gt;\n&lt;p&gt;对于我的博文有任何建议和意见，可以在评论区反馈，也可以通过邮箱834330532@qq.com和我联系。&lt;/p&gt;\n&#34;,&#34;fileName&#34;:&#34;about&#34;,&#34;abstract&#34;:&#34;&#34;,&#34;title&#34;:&#34;关于&#34;,&#34;tags&#34;:[],&#34;date&#34;:&#34;2019-01-25 19:09:48&#34;,&#34;dateFormat&#34;:&#34;2019-01-25&#34;,&#34;feature&#34;:&#34;&#34;,&#34;link&#34;:&#34;https://Ravenclawer.github.io/post/about/&#34;,&#34;hideInList&#34;:true,&#34;isTop&#34;:false,&#34;stats&#34;:{&#34;text&#34;:&#34;1 min read&#34;,&#34;time&#34;:37000,&#34;words&#34;:182,&#34;minutes&#34;:1},&#34;description&#34;:&#34;\nValar Morghulis，很高兴遇见你！🤝\n\n🏠 关于本站\n本站主要用于完善个人学习工作流的最后一环——输出\n之所以选择个人博客的形式的原因在于，目前很多博客平台对文章有审查，或者利用用户知识牟利但不反馈用户的现象，因此使用自有...&#34;,&#34;toc&#34;:&#34;&lt;ul class=\&#34;markdownIt-TOC\&#34;&gt;\n&lt;li&gt;\n&lt;ul&gt;\n&lt;li&gt;&lt;a href=\&#34;#%E5%85%B3%E4%BA%8E%E6%9C%AC%E7%AB%99\&#34;&gt;🏠 关于本站&lt;/a&gt;&lt;/li&gt;\n&lt;li&gt;&lt;a href=\&#34;#%E5%8D%9A%E4%B8%BB%E6%98%AF%E8%B0%81\&#34;&gt;👨‍💻 博主是谁&lt;/a&gt;&lt;/li&gt;\n&lt;li&gt;&lt;a href=\&#34;#%E5%85%B4%E8%B6%A3%E7%88%B1%E5%A5%BD\&#34;&gt;⛹ 兴趣爱好&lt;/a&gt;&lt;/li&gt;\n&lt;li&gt;&lt;a href=\&#34;#%E8%81%94%E7%B3%BB%E6%88%91%E5%91%80\&#34;&gt;📬 联系我呀&lt;/a&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;/li&gt;\n&lt;/ul&gt;\n&#34;},{&#34;content&#34;:&#34;&lt;p&gt;👏  欢迎使用 &lt;strong&gt;Gridea&lt;/strong&gt; ！&lt;br&gt;\n✍️  &lt;strong&gt;Gridea&lt;/strong&gt; 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...&lt;/p&gt;\n&lt;!-- more --&gt;\n&lt;p&gt;&lt;a href=\&#34;https://github.com/getgridea/gridea\&#34;&gt;Github&lt;/a&gt;&lt;br&gt;\n&lt;a href=\&#34;https://gridea.dev/\&#34;&gt;Gridea 主页&lt;/a&gt;&lt;br&gt;\n&lt;a href=\&#34;https://fehey.com/\&#34;&gt;示例网站&lt;/a&gt;&lt;/p&gt;\n&lt;h2 id=\&#34;特性\&#34;&gt;特性👇&lt;/h2&gt;\n&lt;p&gt;📝  你可以使用最酷的 &lt;strong&gt;Markdown&lt;/strong&gt; 语法，进行快速创作&lt;/p&gt;\n&lt;p&gt;🌉  你可以给文章配上精美的封面图和在文章任意位置插入图片&lt;/p&gt;\n&lt;p&gt;🏷️  你可以对文章进行标签分组&lt;/p&gt;\n&lt;p&gt;📋  你可以自定义菜单，甚至可以创建外部链接菜单&lt;/p&gt;\n&lt;p&gt;💻  你可以在 &lt;strong&gt;Windows&lt;/strong&gt;，&lt;strong&gt;MacOS&lt;/strong&gt; 或 &lt;strong&gt;Linux&lt;/strong&gt; 设备上使用此客户端&lt;/p&gt;\n&lt;p&gt;🌎  你可以使用 &lt;strong&gt;𝖦𝗂𝗍𝗁𝗎𝖻 𝖯𝖺𝗀𝖾𝗌&lt;/strong&gt; 或 &lt;strong&gt;Coding Pages&lt;/strong&gt; 向世界展示，未来将支持更多平台&lt;/p&gt;\n&lt;p&gt;💬  你可以进行简单的配置，接入 &lt;a href=\&#34;https://github.com/gitalk/gitalk\&#34;&gt;Gitalk&lt;/a&gt; 或 &lt;a href=\&#34;https://github.com/SukkaW/DisqusJS\&#34;&gt;DisqusJS&lt;/a&gt; 评论系统&lt;/p&gt;\n&lt;p&gt;🇬🇧  你可以使用&lt;strong&gt;中文简体&lt;/strong&gt;或&lt;strong&gt;英语&lt;/strong&gt;&lt;/p&gt;\n&lt;p&gt;🌁  你可以任意使用应用内默认主题或任意第三方主题，强大的主题自定义能力&lt;/p&gt;\n&lt;p&gt;🖥  你可以自定义源文件夹，利用 OneDrive、百度网盘、iCloud、Dropbox 等进行多设备同步&lt;/p&gt;\n&lt;p&gt;🌱 当然 &lt;strong&gt;Gridea&lt;/strong&gt; 还很年轻，有很多不足，但请相信，它会不停向前 🏃&lt;/p&gt;\n&lt;p&gt;未来，它一定会成为你离不开的伙伴&lt;/p&gt;\n&lt;p&gt;尽情发挥你的才华吧！&lt;/p&gt;\n&lt;p&gt;😘 Enjoy~&lt;/p&gt;\n&#34;,&#34;fileName&#34;:&#34;hello-gridea&#34;,&#34;abstract&#34;:&#34;&lt;p&gt;👏  欢迎使用 &lt;strong&gt;Gridea&lt;/strong&gt; ！&lt;br&gt;\n✍️  &lt;strong&gt;Gridea&lt;/strong&gt; 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...&lt;/p&gt;\n&#34;,&#34;title&#34;:&#34;Hello Gridea&#34;,&#34;tags&#34;:[{&#34;name&#34;:&#34;Gridea&#34;,&#34;slug&#34;:&#34;z2fZFu1jd&#34;,&#34;used&#34;:true,&#34;link&#34;:&#34;https://Ravenclawer.github.io/tag/z2fZFu1jd/&#34;}],&#34;date&#34;:&#34;2018-12-12 00:00:00&#34;,&#34;dateFormat&#34;:&#34;2018-12-12&#34;,&#34;feature&#34;:&#34;https://Ravenclawer.github.io//post-images/hello-gridea.png&#34;,&#34;link&#34;:&#34;https://Ravenclawer.github.io/post/hello-gridea/&#34;,&#34;hideInList&#34;:false,&#34;isTop&#34;:false,&#34;stats&#34;:{&#34;text&#34;:&#34;2 min read&#34;,&#34;time&#34;:62000,&#34;words&#34;:298,&#34;minutes&#34;:2},&#34;description&#34;:&#34;👏  欢迎使用 Gridea ！\n✍️  Gridea 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...\n\nGithub\nGridea 主页\n示例网站\n特性👇\n📝  你可以使用最酷的 Markdo...&#34;,&#34;toc&#34;:&#34;&lt;ul class=\&#34;markdownIt-TOC\&#34;&gt;\n&lt;li&gt;\n&lt;ul&gt;\n&lt;li&gt;&lt;a href=\&#34;#%E7%89%B9%E6%80%A7\&#34;&gt;特性👇&lt;/a&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;/li&gt;\n&lt;/ul&gt;\n&#34;}]";
+  // var json = escape.substr(1, escape.length - 2);
+  // var datas = json.split(',');
+  // for (let i=0; i < datas.length; i++) {
+  //   let item = datas[i];
+  //   let attrs = item.split('34;:&#34')
+  //   debugger
+  //   console.log(datas[i])
+  // }
+  let escapeMap = new Map();
+  escapeMap.set('&#34;', '"');
+  escapeMap.set('&gt;', '>');
+  escapeMap.set('&#39;', "'");
+  escapeMap.set('&lt;', '<');
+  escapeMap.set('&quot;', '"');
+  escapeMap.set('&amp;', '&');
+</script> -->
+
+
+</html>
